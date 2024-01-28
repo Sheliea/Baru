@@ -175,63 +175,10 @@ gcv3<-function(x, y, m, k, lambda_lower = 0.001, lambda_upper = 0.99)
     }
   }
 }
-gcv4<-function(x, y, m, k, lambda_lower = 0.001, lambda_upper = 0.99)
-{
-  n=length(y)
-  gcv=10^10
-  aic = 10^10
-  t1=seq(min(x),max(x),length.out=150)
-  p=rep(0,(n-2))
-  for(z in 1:(n-2))
-  {
-    p[z]=t1[z+1]
-  }
-  comb1=combn(p,4,FUN = NULL)
-  c1=t(comb1)
-  for (m in 2:4)
-  {
-    k1=c1[,1]
-    k2=c1[,2]
-    k3=c1[,3]
-    k4=c1[,4]
-    K1=length(k1)
-    for (j1 in 1:K1) 
-      {
-      bs1=bs(x, df=NULL, knot=c(k1[j1],k2[j1],k3[j1],k4[j1]), degre=m-1, intercept=TRUE, Boundary.knots=range(x))
-      w = cbind(bs1)
-      D = diag(ncol(bs1))
-      wtw = t(w) %*% w
-      #Mencari lambda optimal
-      best_lambda <- NULL
-      best_gcv <- Inf
-      for (lambda in seq(lambda_lower, lambda_upper, length.out = 150)) 
-      {
-        beta <- solve(BtB + lambda * t(D) %*% D) %*% (t(B) %*% y)
-        L <- B %*% solve(BtB + lambda * t(D) %*% D) %*% t(B)
-        yhat <- B %*% beta
-        MSE <- t(y - yhat) %*% (y - yhat) / n
-        I <- diag(n)
-        k <- sum(diag(I - L))
-        GCV <- MSE / (k/n)^2
-        
-        if (GCV < best_gcv) 
-        {
-          best_gcv <- GCV
-          best_lambda <- lambda
-          knot1 <- k1[j1]
-          knot2 <- k2[j2]
-          knot3 <- k3[j3]
-          knot4 <- k4[j4]
-          deter <- det(BtB)
-          orde1 <- m
-        }
-      }
       cat("orde = ", orde1, "knot 1 = ", knot1, "Optimal lambda = ", best_lambda, "GCV = ", best_gcv, "determinant = ", deter, "\n")
     }
   }
 }
-
-
 
 pspline<-function(x,y,m,k,lambda_lower = 0.001, lambda_upper = 0.99)
   {
